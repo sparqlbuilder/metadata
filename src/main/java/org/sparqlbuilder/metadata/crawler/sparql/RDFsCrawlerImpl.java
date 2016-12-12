@@ -706,30 +706,29 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 			qexec = null;
 			results = null;
 
-
 			int sCount = 3;
 			while (sCount > 0) {
-			try {
-				// long start = System.currentTimeMillis();
-				qexec = QueryExecutionFactory.sparqlService(endpointURI, query);
-				endpointAccessCount++;
-				interval();
-				results = qexec.execSelect();
-				// long end = System.currentTimeMillis();
-				// System.out.println("EXEC TIME: " + (end - start));
-				break;
-			} catch (Exception ex) {
-				sCount--;
-				if (sCount == 0) {
-					System.out.println(queryString);
-					ex.printStackTrace();
-					throw ex;
-				} else {
-					interval_error();
-					interval_error();
-				}
+				try {
+					// long start = System.currentTimeMillis();
+					qexec = QueryExecutionFactory.sparqlService(endpointURI, query);
+					endpointAccessCount++;
+					interval();
+					results = qexec.execSelect();
+					// long end = System.currentTimeMillis();
+					// System.out.println("EXEC TIME: " + (end - start));
+					break;
+				} catch (Exception ex) {
+					sCount--;
+					if (sCount == 0) {
+						System.out.println(queryString);
+						ex.printStackTrace();
+						throw ex;
+					} else {
+						interval_error();
+						interval_error();
+					}
 
-			}
+				}
 			}
 
 			// create model
@@ -2423,7 +2422,6 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 
 	// heavy
 	public String[] getDeclaredRDFsClasses() throws Exception {
-		String stepName = "getDeclaretedRDFsClasses";
 
 		String[] filterStrs = URICollection.FILTER_CLASS;
 		String[] unfilterStrs = null;
@@ -2622,7 +2620,6 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 
 		QueryExecution qexec = null;
 		ResultSet results = null;
-		String[] recoveredStrings = null;
 
 		int sCount = 3;
 		while (sCount > 0) {
@@ -2653,28 +2650,19 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		}
 
 		ArrayList<String> resultList = new ArrayList<String>();
-		if (recoveredStrings != null) {
-			String[] filterStrs = URICollection.FILTER_PROPERTY;
-			for (String uri : recoveredStrings) {
-				if (uriFilter(uri, filterStrs) != null) {
-					resultList.add(uri);
+		String[] filterStrs = URICollection.FILTER_PROPERTY;
+		ArrayList<String> forLog = new ArrayList<String>();
+		for (; results.hasNext();) {
+			QuerySolution sol = results.next();
+			Resource res = sol.getResource("p");
+			if (res != null) {
+				forLog.add(res.getURI());
+				if (uriFilter(res.getURI(), filterStrs) != null) {
+					resultList.add(res.getURI());
 				}
 			}
-		} else {
-			String[] filterStrs = URICollection.FILTER_PROPERTY;
-			ArrayList<String> forLog = new ArrayList<String>();
-			for (; results.hasNext();) {
-				QuerySolution sol = results.next();
-				Resource res = sol.getResource("p");
-				if (res != null) {
-					forLog.add(res.getURI());
-					if (uriFilter(res.getURI(), filterStrs) != null) {
-						resultList.add(res.getURI());
-					}
-				}
-			}
-			logFileManager.writeResult(stepName, null, forLog.toArray(new String[0]));
 		}
+		logFileManager.writeResult(stepName, null, forLog.toArray(new String[0]));
 		qexec.close();
 		String[] resultStringArray = resultList.toArray(new String[0]);
 		return resultStringArray;
