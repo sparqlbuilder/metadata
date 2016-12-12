@@ -34,7 +34,7 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 	long INTERVAL = 500L;
 	long INTERVAL_ERROR = 5000L;
 
-	static String version = "20160612-1";
+	static String version = "20161212-1";
 
 	String endpointURI = null;
 	String crawlName = null;
@@ -106,11 +106,24 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 					}
 				} else {
 					// usage
-
+					printUsage();
 				}
 			}
 		}
 	}
+
+
+	private static void printUsage() throws Exception{
+		System.out.println("Usage: java org.sparqlbuilder.metadata.crawler.sparql.RDFsCrawlerImpl [options]");
+		System.out.println("   [options]");
+		System.out.println("       1. to print a list of graphURIs");
+		System.out.println("            -g endpointURL");
+		System.out.println("       2. to crawl whole data in the endpoint");
+		System.out.println("            -ac endpointURL crawlName outputFileName");
+		System.out.println("       3. to crawl the specified graph in the endpoint");
+		System.out.println("            -gc endpointURL crawlName graphURI outputFileName");
+	}
+
 
 	public static void crawl(RDFsCrawlerImpl impl, String[] graphURIs) throws Exception {
 
