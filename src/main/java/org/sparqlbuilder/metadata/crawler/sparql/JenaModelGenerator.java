@@ -1,22 +1,14 @@
 package org.sparqlbuilder.metadata.crawler.sparql;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.apache.jena.riot.RDFDataMgr;
 
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.DatasetFactory;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class JenaModelGenerator {
@@ -25,22 +17,17 @@ public class JenaModelGenerator {
 	String[] graphURIs = null;
 	Model model = null;
 	Dataset dataset = null;
-	
-	
-	public static void main(String[] args) throws Exception{
-		JenaModelGenerator jmg = new JenaModelGenerator("c:\\temp\\allie.ttl");
-		
-	}
-	
+
+
 	public JenaModelGenerator(String file) throws Exception{
 		readCrawlerRdfFile(file);
 	}
-	
+
 	public void readCrawlerRdfFile(String file) throws Exception{
 		model = RDFDataMgr.loadModel(file);
 		Property endpointPro = model.getProperty(URICollection.PROPERTY_SD_ENDPOINT);
 		NodeIterator nit = model.listObjectsOfProperty(endpointPro);
-		
+
 
 		int cnt = 0;
 		Resource endPointRes = null;
@@ -52,7 +39,7 @@ public class JenaModelGenerator {
 			}
 			cnt++;
 		}
-		
+
 		// graphs
 		Resource defaultDatasetBlankNode = null;
 		Property defaultDatasetPro = model
