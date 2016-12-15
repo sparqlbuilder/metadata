@@ -756,66 +756,59 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 			qexec.close();
 		}
 
-		// TODO
 		// subclassOf
-		// StringBuffer queryBuffer = new StringBuffer();
-		// queryBuffer.append("PREFIX owl: <" + URICollection.PREFIX_OWL +
-		// ">\n");
-		// queryBuffer
-		// .append("PREFIX rdfs: <" + URICollection.PREFIX_RDFS + ">\n");
-		// queryBuffer.append("PREFIX rdf: <" + URICollection.PREFIX_RDF +
-		// ">\n");
-		// queryBuffer.append("SELECT DISTINCT ?c ?d \n");
-		// if (graphURIs != null && graphURIs.length != 0) {
-		// for (String graphURI : graphURIs) {
-		// queryBuffer.append("FROM <");
-		// queryBuffer.append(graphURI);
-		// queryBuffer.append(">\n");
-		// }
-		// }
-		// queryBuffer.append("WHERE{\n");
-		// queryBuffer.append(" ?c rdfs:subclassOf ?d.\n");
-		// //
-		// queryBuffer.append("FILTER(! contains(str(?c),\"openlinksw\"))\n");
-		// queryBuffer.append("}");
-		//
-		// String queryString = queryBuffer.toString();
-		//
-		// // System.out.println(queryString);
-		//
-		// Query query = QueryFactory.create(queryString);
-		//
-		// QueryExecution qexec = null;
-		// ResultSet results = null;
-		// try {
-		// // long start = System.currentTimeMillis();
-		// qexec = QueryExecutionFactory.sparqlService(endpointURI, query);
-		// endpointAccessCount++;
-		// results = qexec.execSelect();
+		StringBuffer queryBuffer = new StringBuffer();
+		queryBuffer.append("PREFIX owl: <" + URICollection.PREFIX_OWL + ">\n");
+		queryBuffer.append("PREFIX rdfs: <" + URICollection.PREFIX_RDFS + ">\n");
+		queryBuffer.append("PREFIX rdf: <" + URICollection.PREFIX_RDF + ">\n");
+		queryBuffer.append("SELECT DISTINCT ?c ?d \n");
+		if (graphURIs != null && graphURIs.length != 0) {
+			for (String graphURI : graphURIs) {
+				queryBuffer.append("FROM <");
+				queryBuffer.append(graphURI);
+				queryBuffer.append(">\n");
+			}
+		}
+		queryBuffer.append("WHERE{\n");
+		queryBuffer.append(" ?c rdfs:subclassOf ?d.\n");
+		queryBuffer.append("FILTER(! contains(str(?c),\"openlinksw\"))\n");
+		queryBuffer.append("}");
+
+		String queryString = queryBuffer.toString();
+
+//		System.out.println(queryString);
+
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qexec = null;
+		ResultSet results = null;
+		try {
+		// long start = System.currentTimeMillis();
+			qexec = QueryExecutionFactory.sparqlService(endpointURI, query);
+			endpointAccessCount++;
+			results = qexec.execSelect();
 		// // long end = System.currentTimeMillis();
 		// // System.out.println("EXEC TIME: " + (end - start));
-		// System.out.print(".");
-		// } catch (Exception ex) {
-		// ex.printStackTrace();
-		// throw ex;
-		// }
-		//
-		// Property subClsOf = model
-		// .createProperty(URICollection.PROPERTY_RDFS_SUBCLASSOF);
-		// for (; results.hasNext();) {
-		// QuerySolution sol = results.next();
-		// Resource cCls = sol.getResource("c");
-		// Resource pCls = sol.getResource("d");
-		// if (cCls != null
-		// && pCls != null
-		// && uriFilter(cCls.getURI(), filterStrs, unfilterStrs) != null) {
-		// cCls = model.createResource(cCls.getURI());
-		// pCls = model.createResource(pCls.getURI());
-		// cCls.addProperty(subClsOf, pCls);
-		// }
-		// }
-		// qexec.close();
-		schema.model = model;
+			System.out.print(".");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+
+		Property subClsOf = model.createProperty(URICollection.PROPERTY_RDFS_SUBCLASSOF);
+		String[] filterStrs = URICollection.FILTER_CLASS;
+		for (; results.hasNext();) {
+			QuerySolution sol = results.next();
+			Resource cCls = sol.getResource("c");
+			Resource pCls = sol.getResource("d");
+			if (cCls != null && pCls != null && uriFilter(cCls.getURI(), filterStrs) != null) {
+				cCls = model.createResource(cCls.getURI());
+				pCls = model.createResource(pCls.getURI());
+				cCls.addProperty(subClsOf, pCls);
+			}
+		 }
+		 qexec.close();
+
+		 schema.model = model;
 		schema.classCategory = classCategory;
 		return schema;
 	}
