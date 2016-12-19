@@ -771,7 +771,7 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		}
 		queryBuffer.append("WHERE{\n");
 		queryBuffer.append(" ?c rdfs:subclassOf ?d.\n");
-		queryBuffer.append("FILTER(! contains(str(?c),\"openlinksw\"))\n");
+//		queryBuffer.append("FILTER(! contains(str(?c),\"openlinksw\"))\n");
 		queryBuffer.append("}");
 
 		String queryString = queryBuffer.toString();
@@ -788,7 +788,7 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 			results = qexec.execSelect();
 		// // long end = System.currentTimeMillis();
 		// // System.out.println("EXEC TIME: " + (end - start));
-			System.out.print(".");
+			System.out.println("sb");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			throw ex;
