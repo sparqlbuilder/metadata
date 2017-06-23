@@ -2264,10 +2264,17 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		this.endpointURI = endpointURI;
 	}
 
-	public RDFsCrawlerImpl(String endpointURI, String crawlName, String outDirName) {
+	public RDFsCrawlerImpl(String endpointURI, String crawlName, String outDirName) throws Exception {
 		this.endpointURI = endpointURI;
 		this.crawlName = crawlName;
 		this.outDir = new File(outDirName);
+		if( !this.outDir.exists() ){
+			this.outDir.mkdirs();
+		}else{
+			if( this.outDir.isFile() ){
+				throw new Exception("Output File exists and new output directory cannot be created: " + this.outDir.getCanonicalPath());
+			}
+		}
 	}
 
 	public RDFsCrawlerImpl(String endpointURI, String[] graphURIs) {
