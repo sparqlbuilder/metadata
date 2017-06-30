@@ -63,57 +63,64 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 				}
 			}
 		} else {
-			if (args.length == 4 && args[0].equals("-ac")) {
+			if( args.length == 2 && args[0].equals("-d") ){
 				String endPURI = args[1];
-				String crawlName = args[2];
-				String outDir = args[3];
-				RDFsCrawlerImpl impl = new RDFsCrawlerImpl(endPURI, crawlName, outDir);
-				String[] graphURIs = null;
-				graphURIs = impl.getGraphURIs();
-				if (graphURIs == null || graphURIs.length == 0) {
-					graphURIs = new String[0];
-				} else {
-					Arrays.sort(graphURIs);
-					if (!Arrays.asList(graphURIs).contains((String) null)) {
-						String[] extGraphURIs = new String[graphURIs.length + 1];
-						extGraphURIs[graphURIs.length] = null;
-						for (int i = 0; i < graphURIs.length; i++) {
-							extGraphURIs[i] = graphURIs[i];
-						}
-						graphURIs = extGraphURIs;
-					}
-				}
+				// graphlist
+				RDFsCrawlerImpl impl = new RDFsCrawlerImpl(endPURI);
+				String[] graphURIs = new String[0];
 				crawl(impl, graphURIs);
-			} else {
-				if (args.length == 5 && args[0].equals("-gc")) {
-					// boolean errorState = false;
+			}else{
+				if (args.length == 4 && args[0].equals("-ac")) {
 					String endPURI = args[1];
 					String crawlName = args[2];
-					String targetGraphURI = args[3];
-					String outDir = args[4];
+					String outDir = args[3];
 					RDFsCrawlerImpl impl = new RDFsCrawlerImpl(endPURI, crawlName, outDir);
-
 					String[] graphURIs = null;
 					graphURIs = impl.getGraphURIs();
-					if (graphURIs != null) {
-						for (String graphURI : graphURIs) {
-							if (graphURI.equals(targetGraphURI)) {
-								graphURIs = new String[1];
-								graphURIs[0] = targetGraphURI;
-								crawl(impl, graphURIs);
+					if (graphURIs == null || graphURIs.length == 0) {
+						graphURIs = new String[0];
+					} else {
+						Arrays.sort(graphURIs);
+						if (!Arrays.asList(graphURIs).contains((String) null)) {
+							String[] extGraphURIs = new String[graphURIs.length + 1];
+							extGraphURIs[graphURIs.length] = null;
+							for (int i = 0; i < graphURIs.length; i++) {
+								extGraphURIs[i] = graphURIs[i];
 							}
+							graphURIs = extGraphURIs;
 						}
 					}
+					crawl(impl, graphURIs);
 				} else {
-					// usage
-					printUsage();
+					if (args.length == 5 && args[0].equals("-gc")) {
+						// boolean errorState = false;
+						String endPURI = args[1];
+						String crawlName = args[2];
+						String targetGraphURI = args[3];
+						String outDir = args[4];
+						RDFsCrawlerImpl impl = new RDFsCrawlerImpl(endPURI, crawlName, outDir);
+
+						String[] graphURIs = null;
+						graphURIs = impl.getGraphURIs();
+						if (graphURIs != null) {
+							for (String graphURI : graphURIs) {
+								if (graphURI.equals(targetGraphURI)) {
+									graphURIs = new String[1];
+									graphURIs[0] = targetGraphURI;
+									crawl(impl, graphURIs);
+								}
+							}
+						}
+					} else {
+						// usage
+						printUsage();
+					}
 				}
 			}
 		}
 	}
 
-
-	private static void printUsage() throws Exception{
+	private static void printUsage() throws Exception {
 		System.out.println("Usage: java org.sparqlbuilder.metadata.crawler.sparql.RDFsCrawlerImpl [options]");
 		System.out.println("   [options]");
 		System.out.println("       1. to print a list of graphURIs");
@@ -123,7 +130,6 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		System.out.println("       3. to crawl the specified graph in the endpoint");
 		System.out.println("            -gc endpointURL crawlName graphURI outputFileName");
 	}
-
 
 	public static void crawl(RDFsCrawlerImpl impl, String[] graphURIs) throws Exception {
 
@@ -771,23 +777,23 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		}
 		queryBuffer.append("WHERE{\n");
 		queryBuffer.append(" ?c rdfs:subclassOf ?d.\n");
-//		queryBuffer.append("FILTER(! contains(str(?c),\"openlinksw\"))\n");
+		// queryBuffer.append("FILTER(! contains(str(?c),\"openlinksw\"))\n");
 		queryBuffer.append("}");
 
 		String queryString = queryBuffer.toString();
 
-//		System.out.println(queryString);
+		// System.out.println(queryString);
 
 		Query query = QueryFactory.create(queryString);
 		QueryExecution qexec = null;
 		ResultSet results = null;
 		try {
-		// long start = System.currentTimeMillis();
+			// long start = System.currentTimeMillis();
 			qexec = QueryExecutionFactory.sparqlService(endpointURI, query);
 			endpointAccessCount++;
 			results = qexec.execSelect();
-		// // long end = System.currentTimeMillis();
-		// // System.out.println("EXEC TIME: " + (end - start));
+			// // long end = System.currentTimeMillis();
+			// // System.out.println("EXEC TIME: " + (end - start));
 			System.out.println("sb");
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -805,10 +811,10 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 				pCls = model.createResource(pCls.getURI());
 				cCls.addProperty(subClsOf, pCls);
 			}
-		 }
-		 qexec.close();
+		}
+		qexec.close();
 
-		 schema.model = model;
+		schema.model = model;
 		schema.classCategory = classCategory;
 		return schema;
 	}
@@ -2268,11 +2274,12 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		this.endpointURI = endpointURI;
 		this.crawlName = crawlName;
 		this.outDir = new File(outDirName);
-		if( !this.outDir.exists() ){
+		if (!this.outDir.exists()) {
 			this.outDir.mkdirs();
-		}else{
-			if( this.outDir.isFile() ){
-				throw new Exception("Output File exists and new output directory cannot be created: " + this.outDir.getCanonicalPath());
+		} else {
+			if (this.outDir.isFile()) {
+				throw new Exception("Output File exists and new output directory cannot be created: "
+						+ this.outDir.getCanonicalPath());
 			}
 		}
 	}
