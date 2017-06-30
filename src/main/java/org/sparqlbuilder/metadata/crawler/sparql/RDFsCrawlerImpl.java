@@ -34,7 +34,7 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 	long INTERVAL = 500L;
 	long INTERVAL_ERROR = 5000L;
 
-	static String version = "20161212-1";
+	static String version = "20170630-1";
 
 	String endpointURI = null;
 	String crawlName = null;
