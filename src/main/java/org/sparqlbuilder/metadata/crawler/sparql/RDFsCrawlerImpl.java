@@ -63,10 +63,12 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 				}
 			}
 		} else {
-			if( args.length == 2 && args[0].equals("-d") ){
+			if( args.length == 4 && args[0].equals("-d") ){
 				String endPURI = args[1];
+				String crawlName = args[2];
+				String outDir = args[3];
 				// graphlist
-				RDFsCrawlerImpl impl = new RDFsCrawlerImpl(endPURI);
+				RDFsCrawlerImpl impl = new RDFsCrawlerImpl(endPURI, crawlName, outDir);
 				String[] graphURIs = new String[0];
 				crawl(impl, graphURIs);
 			}else{
@@ -129,6 +131,9 @@ public class RDFsCrawlerImpl implements RDFsCrawler {
 		System.out.println("            -ac endpointURL crawlName outputFileName");
 		System.out.println("       3. to crawl the specified graph in the endpoint");
 		System.out.println("            -gc endpointURL crawlName graphURI outputFileName");
+		System.out.println("       4. to crawl the default named graph in the endpoint");
+		System.out.println("            -d endpointURL crawlName outputFileName");
+		
 	}
 
 	public static void crawl(RDFsCrawlerImpl impl, String[] graphURIs) throws Exception {
